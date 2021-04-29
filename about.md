@@ -4,12 +4,15 @@ title: About
 permalink: /about/
 ---
 
-Some information about you!
+JARK006's blog.
 
-### More Information
+### More
 
-A place to include any other types of information that you'd like to include about yourself.
+Record my every progress.
 
 ### Contact me
+---
 
-[email@domain.com](mailto:email@domain.com)
+[jark006@qq.com](mailto:jark006@qq.com)
+
+[Github page](https://github.com/jark006)
