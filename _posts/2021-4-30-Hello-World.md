@@ -1,11 +1,10 @@
 ---
 layout: post
-title: Hello
+title: Hello World
 comments: true
 ---
 
-content text.
-
+The first blog.
 
 ``` c++
 cout << "Hello world!" << endl;
