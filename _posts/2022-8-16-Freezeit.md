@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 冻它模块
+header-style: text
 comments: true
 ---
 

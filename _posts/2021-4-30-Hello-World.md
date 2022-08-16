@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Hello World
+header-style: text
 comments: true
 ---
 
