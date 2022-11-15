@@ -9,9 +9,7 @@ layout: default
     {{ content }}
   </div>
 
-  <div class="date">
-    Written on {{ page.date | date: "%B %e, %Y" }} 也许需要某种上网方式才能查看和参与文章评论...
-  </div>
+  <div class="date">文章日期：{{ page.date | date: "%Y-%m-%d" }}</div>
 
   {% include disqus.html %}
 </article>
