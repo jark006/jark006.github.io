@@ -3,22 +3,22 @@ layout: post
 title: 冻它APP
 header-style: text
 comments: true
-excerpt: APP预览
+excerpt: 冻它APP截图预览
 ---
 
 ### APP预览
 
-<img src="{{ site.baseurl }}/images/app_preview.png" />
+![预览](/images/app_preview.png)
 
 ---
 
 ### 相关链接
 
-[酷安 @JARK006](https://www.coolapk.com/u/1212220)
+[酷安 @JARK006](https://www.coolapk.com/u/1212220) 
 
 [Github 发布页面](https://github.com/jark006/freezeitRelease)
 
-[蓝奏云下载](https://jark006.lanzout.com/b017oz9if) 密码: dy6i
+[蓝奏云](https://jark006.lanzout.com/b017oz9if) 密码: dy6i
 
 [QQ群组 781222669](https://jq.qq.com/?_wv=1027&k=Q5aVUglt)
 
