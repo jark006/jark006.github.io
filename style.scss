@@ -18,7 +18,11 @@ html {
 }
 
 body {
-	background: $white;
+  // background-image: url("/images/backgroud.png");
+  // background-attachment: fixed;
+  // background-size: cover;
+  // background-position:center;
+	background: rgba(221, 255, 240, 0.575);
   font: 18px/1.4 $helvetica;
   color: $darkGray;
 }
@@ -152,7 +156,8 @@ img {
 //
 
 .wrapper-masthead {
-  margin-bottom: 50px;
+	background: rgb(218, 234, 255);
+  margin-bottom: 30px;
 }
 
 .masthead {
@@ -274,9 +279,9 @@ nav {
 
 .wrapper-footer {
   margin-top: 50px;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-  background-color: $lightGray;
+  // border-top: 1px solid #ddd;
+  // border-bottom: 1px solid #ddd;
+  // background-color: #fff;
 }
 
 footer {

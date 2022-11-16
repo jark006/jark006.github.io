@@ -1,11 +1,9 @@
 ---
 layout: page
-title: About
+title: 关于
 permalink: /about/
 ---
 
-JARK006's blog.
+## JARK006的博客
 
-### More
-
-Record something.
+随便写写一些东西。
