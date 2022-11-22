@@ -59,7 +59,7 @@ excerpt: 冻它相关介绍，冻结模式，面具模块、Xposed模块作用�
 
     - **FreezerV1(frozen)路径**: */dev/jark_freezer/[frozen/unfrozen]*
 
-    - **FreezerV1(uid)路径**: */dev/jark_freezer/uid_10xxx/pid_xxx*
+    - **FreezerV1(uid)路径**: */dev/jark_freezer/uid_10xxx*
 
 1. 各种模式在冻它模块下的体验排行如下，仅从原理考虑出发，不一定符合全部情况，以个人实际体验为准：
 
@@ -158,7 +158,7 @@ excerpt: 冻它相关介绍，冻结模式，面具模块、Xposed模块作用�
 
         ![P1](/images/2022-11-15P3.png)
 
-    1. 如果是其他墓碑，请使用   **Termux终端**，先输入 **su** 执行进入管理员账户，再选择以下其中一个命令执行，结果解释：
+    1. 如果是其他墓碑，请使用   **Termux终端** ([官网](https://termux.dev/cn/index.html) / [V0.118下载](https://f-droid.org/repo/com.termux_118.apk))，先输入 **su** 执行进入管理员账户，再选择以下其中一个命令执行，结果解释：
 
         - FreezerV1冻结状态: **__refrigerator**
 
