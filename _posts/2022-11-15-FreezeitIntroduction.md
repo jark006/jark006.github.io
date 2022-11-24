@@ -6,13 +6,10 @@ comments: false
 excerpt: 冻它相关介绍，冻结模式，面具模块、Xposed模块作用等等
 ---
 
-<div align="center">
-<pre>
+<div align="center"><pre>
 <img src = "/images/logo.png"/>
 <font size="6"><strong>{{ page.title }}</strong></font>
-
-</pre>
-</div>
+</pre></div>
 
 
 ---
@@ -39,13 +36,13 @@ excerpt: 冻它相关介绍，冻结模式，面具模块、Xposed模块作用�
 
 1. <strong id="FreezerV1">FreezerV1</strong> 很早便在内核中支持，3.x/4.x/5.x内核都会支持。部分内核的FreezerV1存在缺陷，进程PID被Freezer持有时(即冻结状态)无法被杀死，依旧占据内存，类似内存泄漏，需要解冻(thaw)才能结束进程并释放内存。这是内核级缺陷，应用层大概率无法解决，只能缓解，因此冻它依靠 **打开应用(解冻)** 和 **定时解冻** 操作来彻底结束这些异常的进程并释放其内存。
 
-    - 注1：厂商基于V1的墓碑机制(例如FreezerV1版Millet)会捕获**杀进程信号**进而为其解冻，不存在内存无法释放问题。
+    - 注1：厂商基于V1的墓碑机制(例如FreezerV1版Millet)会捕获 **杀进程信号** 进而为其解冻，不存在内存无法释放问题。
 
-1. <strong id="FreezerV2">FreezerV2</strong> 在 **5.4** 内核(Android11)起完整支持，该冻结模式的系统体验最好。部分厂商会移植到4.14~4.19内核中，但是可能没有完整移植而缺失 **BINDER_FREEZE** 特性，导致进程在冻结期间，binder驱动依旧为其工作，若此时应用收到 **binder同步** 请求，超时未响应则会被系统认为异常而杀掉，而FreezerV1、SIGSTOP也会这样。
+1. <strong id="FreezerV2">FreezerV2</strong> 在 **5.4** 内核(Android11)起 **完整支持** ，该冻结模式的系统体验最好。部分厂商会移植到4.14~4.19内核中，但是可能没有完整移植而缺失 **BINDER_FREEZE** 特性，导致进程在冻结期间，binder驱动依旧为其工作，若此时应用收到 **binder同步** 请求，超时未响应则会被系统认为异常而杀掉，而FreezerV1、SIGSTOP也会这样。
   
     - 注1：MIUI的 **FreezerV1版Millet** 通过修改了内核binder驱动来获得binder同步事件进行解冻，避免了这个问题。而完整版FreezerV2则不用担心binder同步问题(异步binder请求会被系统缓存起来，等应用解冻了再处理，暂不清楚会不会像广播那样导致缓存溢出堵塞)。
 
-    - 注2：一般 **4.14-4.19** 内核支持 **不完整的** 的FreezerV2，默认没有启用，如果想开启这种不完整FreezerV2，在冻它设置里开启挂载，重启即可，如果无法挂载，可在冻它群文件寻找其他挂载V2模块，若仍旧失败则说明内核不支持(部分高通设备才支持)。
+    - 注2：一般 **4.14-4.19** 内核支持 **不完整** 的FreezerV2，默认没有启用，如果想开启这种不完整FreezerV2，在冻它设置里开启挂载，重启即可，如果无法挂载，可在冻它群文件寻找其他挂载V2模块，若仍旧失败则说明内核不支持(部分高通设备才支持)。
 
     - 注3：主线 **5.4** 版本内核(Android11)起支持 [**BINDER_FREEZE**](https://cs.android.com/android/kernel/superproject/+/common-android11-5.4:common/drivers/android/binder.c;drc=da97a10882ba78cc036cc6b7b006dd057029b2e4;l=5043) 特性。
 
