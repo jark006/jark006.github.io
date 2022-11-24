@@ -160,17 +160,17 @@ excerpt: 冻它相关介绍，冻结模式，面具模块、Xposed模块作用�
 
     1. 如果是其他墓碑，请使用   **Termux终端** ([官网](https://termux.dev/cn/index.html) / [V0.118下载](https://f-droid.org/repo/com.termux_118.apk))，先输入 **su** 执行进入管理员账户，再选择以下其中一个命令执行，结果解释：
 
-        - FreezerV1冻结状态: **__refrigerator**
+        - FreezerV1冻结状态: [**__refrigerator**](https://cs.android.com/android/kernel/superproject/+/common-android11-5.4:common/kernel/freezer.c;drc=0e48f51cbbfbdb79149806de14dcb8bf0f01ca94;l=56)
 
-        - FreezerV2冻结状态: **do_freezer_trap**
+        - FreezerV2冻结状态: [**do_freezer_trap**](https://cs.android.com/android/kernel/superproject/+/common-android12-5.4-lts:common/kernel/signal.c;drc=572528d7607de23a143df0a4a14d7d8a7e889c9e;l=2438)
 
-        - SIGSTOP冻结状态：**do_signal_stop**
+        - SIGSTOP冻结状态：[**do_signal_stop**](https://cs.android.com/android/kernel/superproject/+/common-android-4.9:common/kernel/signal.c;drc=a64916631a993a87bc88b3f90b0ed7090198d2a1;l=1995)
 
-        - 不完整FreezerV2冻结状态：**get_signal**
+        - 不完整FreezerV2冻结状态：[**get_signal**](https://cs.android.com/android/kernel/superproject/+/common-android-4.9:common/kernel/signal.c;drc=a64916631a993a87bc88b3f90b0ed7090198d2a1;l=2200)
 
         - 其他状态，一般是应用正常运行中的各种状态：
             - **xxx_epoll_wait**：等待事件触发；
-            - **binder_ioctl_xxx**：binder通信中；
+            - **binder_xxx**：binder通信中；
             - 等等
 
     1. 此命令直接只会过滤出当前已冻结的进程信息，没有冻结的不会显示出来：
