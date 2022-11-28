@@ -77,10 +77,10 @@ excerpt: 冻它相关介绍，冻结模式，面具模块、Xposed模块作用�
 
 1. **【v2.3.0起】** 冻它的前台设置有两种级别：
 
-    1. **严格前台**：当应用Activity显示在 **顶层** (TOP)或 **绑定到顶层** (BOUND_TOP)应用时，才算在前台，也是旧版冻它(v2.2.18及以下)的前台判断条件。
+    1. **严格前台**：当应用Activity显示在 **顶层** (TOP)或 **绑定到顶层** (BOUND_TOP)应用时(ProcessStateNumber: 2 ~ 3)，才算在前台，也是旧版冻它(v2.2.18及以下)的前台判断条件。
 
     2. **宽松前台**：若符合 *严格前台* 的条件，或存在 **悬浮窗、常驻通知栏、音频播放服务** 等前台服务时，则判为前台状态，不会被冻结，其判断范围包含：
-    TOP，BOUND_TOP，FOREGROUND_SERVICE，BOUND_FOREGROUND_SERVICE，IMPORTANT_FOREGROUND。
+    TOP，BOUND_TOP，FOREGROUND_SERVICE，BOUND_FOREGROUND_SERVICE，IMPORTANT_FOREGROUND。(ProcessStateNumber : 2 ~ 6)
 
 1. **【v2.2.18及以下】** 冻它的前台状态判断比较严格：
 
@@ -94,7 +94,7 @@ excerpt: 冻它相关介绍，冻结模式，面具模块、Xposed模块作用�
 
 1. 仅接管 **第三方应用** 冻结，不会接管系统应用(以后的版本也不会)，部分系统辅助类应用以第三方应用形式存在(可卸载)，被冻结后会导致系统异常，请手动设为自由后台，若发现此类应用，请及时反馈给作者加入内置，给其他人避坑。
 
-1. 在MIUI下，为防止机制冲突，模块会禁用系统自带的 **Millet** ，这是MIUI自身的墓碑机制。
+1. 在MIUI13中，为防止机制冲突，模块会禁用系统自带的墓碑机制 **Millet** 。
 
 1. 模块的文件大多位于模块自身目录内，以下两个文件则在外部，不过卸载模块时，都会被删除，同时也会自动卸载冻它APP，若是手动删除冻它模块，记得也得手动卸载冻它APP并删除以下两个文件。
 
@@ -106,7 +106,7 @@ excerpt: 冻它相关介绍，冻结模式，面具模块、Xposed模块作用�
 
 ---
 
-## 冻它Xposed说明
+## 冻它Xposed说明：系统框架
 
 1. 安卓进程在冻结状态无法正常响应安卓框架的各类服务请求，容易导致严重副作用，故Xposed的作用则是解决这类问题。
 
@@ -125,6 +125,20 @@ excerpt: 冻它相关介绍，冻结模式，面具模块、Xposed模块作用�
 1. <strong id="JobScheduler">JobScheduler</strong> ：TODO 暂不处理。Doze期间系统会停止执行。
 
 1. <strong id="Standby">Standby</strong> ：TODO 暂不处理。有冻结就貌似不太需要了。
+
+
+## 冻它Xposed说明：电量与性能
+
+1. 只在MIUI中存在，用于禁用其杀后台的功能，如果不需要，可以不勾选。
+
+1. 路径 `miui.process.ProcessManager` 下的 `kill()` 将会直接返回 true.
+
+1. 路径 `com.miui.powerkeeper.statemachine.SleepModeControllerNew` 下的 `clearApp()` 将会替换成空白操作。
+
+1. 路径 `com.miui.powerkeeper.statemachine.PowerStateMachine` 下的 `clearAppWhenScreenOffTimeOut()`、`clearAppWhenScreenOffTimeOutInNight()`、`clearUnactiveApps()` 将会替换成空白操作。
+
+
+
 
 ---
 
@@ -223,9 +237,7 @@ excerpt: 冻它相关介绍，冻结模式，面具模块、Xposed模块作用�
 
 ---
 
-<details id="相关链接" open>
-
-<summary>相关链接</summary>
+## 相关链接
 
 [酷安 @JARK006](https://www.coolapk.com/u/1212220)
 
@@ -240,5 +252,3 @@ excerpt: 冻它相关介绍，冻结模式，面具模块、Xposed模块作用�
 [Telegram 群组](https://t.me/+sjDX1oTk31ZmYjY1)
 
 [Telegram 频道](https://t.me/freezeitRelease)
-
-</details>
