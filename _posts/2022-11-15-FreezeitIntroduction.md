@@ -126,19 +126,12 @@ excerpt: 冻它相关介绍，冻结模式，面具模块、Xposed模块作用�
 
 1. <strong id="Standby">Standby</strong> ：TODO 暂不处理。有冻结就貌似不太需要了。
 
+1. <strong id="传感器">传感器(SENSOR)</strong> ：TODO 暂不处理。sensor 的开启会导致 cpu 的唤醒。
+
 
 ## 冻它Xposed说明：电量与性能
 
 1. 只在MIUI中存在，用于禁用其杀后台的功能，如果不需要，可以不勾选。
-
-1. 路径 `miui.process.ProcessManager` 下的 `kill()` 将会直接返回 true.
-
-1. 路径 `com.miui.powerkeeper.statemachine.SleepModeControllerNew` 下的 `clearApp()` 将会替换成空白操作。
-
-1. 路径 `com.miui.powerkeeper.statemachine.PowerStateMachine` 下的 `clearAppWhenScreenOffTimeOut()`、`clearAppWhenScreenOffTimeOutInNight()`、`clearUnactiveApps()` 将会替换成空白操作。
-
-
-
 
 ---
 

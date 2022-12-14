@@ -166,8 +166,8 @@ img {
   transform: translateY(calc(100vh + 50px));
 
   @include mobile {
-    top: -200px;
-    right: 40px;
+    // top: -200px;
+    right: 20px;
   }
 }
 
