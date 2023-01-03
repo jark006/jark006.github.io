@@ -6,10 +6,14 @@ comments: false
 excerpt: 冻它相关介绍，冻结模式，面具模块、Xposed模块作用等等
 ---
 
-<div align="center"><pre>
+
+<div align="center">
 <img src = "/images/logo.png"/>
+<br>
 <font size="6"><strong>{{ page.title }}</strong></font>
-</pre></div>
+<br>
+<font size="2"><strong>更新于 2023-01-03</strong></font>
+</div>
 
 
 ---
@@ -111,9 +115,7 @@ excerpt: 冻它相关介绍，冻结模式，面具模块、Xposed模块作用�
 
 1. 模块的文件大多位于模块自身目录内，以下两个文件则在外部，不过卸载模块时，都会被删除，同时也会自动卸载冻它APP，若是手动删除冻它模块，记得也得手动卸载冻它APP并删除以下两个文件。
 
-    + 模块发生异常时，异常日志会追加到: **/sdcard/Android/freezeit_crash_log.txt** ，若存在异常内容，请向作者反馈。若运行一切正常，则不会出现该文件。
-
-    + 模块会创建一个配置文件给 **冻它Xposed** ，位于 **/data/system/freezeit.conf** ，普通用户不用理会这个。
+    - 模块发生异常时，异常日志会追加到: **/sdcard/Android/freezeit_crash_log.txt** ，若存在异常内容，请向作者反馈。若运行一切正常，则不会出现该文件。
 
 1. 如果使用冻它过程开启了Doze功能，系统的 **电池优化白名单** 中的 **第三方应用** 会被替换成冻它的 **自由后台(包括内置)应用** ，这是本模块唯一的 **残留内容** 。
 
@@ -123,20 +125,19 @@ excerpt: 冻它相关介绍，冻结模式，面具模块、Xposed模块作用�
 
 1. 安卓进程在冻结状态无法正常响应安卓框架的各类服务请求，容易导致严重副作用，故Xposed的作用则是解决这类问题。
 
-1. <strong id="广播处理">广播处理</strong> ：应用在冻结状态无法响应各种广播，这些广播会积累在系统缓存中，直到系统无法处理其他新生的广播，也就是广播堵塞，而拨号、安装应用程序等等行为都需要广播通信，此时这些行为会堵在某个阶段，临时解决方法是一键清理后台，这样系统会顺带清理传递给这些应用的广播，暂时获得广播畅通，但随着时间推移依旧会慢慢积累堵塞。冻它则会拦截发往冻结应用的广播，避免其无法处理而堵塞。
+1. <strong id="广播">广播(Broadcast)</strong> ：应用在冻结状态无法响应各种广播，这些广播会积累在系统缓存中，直到系统无法处理其他新生的广播，也就是广播堵塞，而拨号、安装应用程序等等行为都需要广播通信，此时这些行为会堵在某个阶段，临时解决方法是一键清理后台，这样系统会顺带清理传递给这些应用的广播，暂时获得广播畅通，但随着时间推移依旧会慢慢积累堵塞。**冻它则会拦截发往冻结应用的广播，避免其无法处理而堵塞**。
 
-1. <strong id="ANR处理">ANR处理</strong> ：应用在冻结状态，超时没有响应系统某些服务或状态问询时，系统会弹窗提示 ***XXX应用未响应*** 询问等待还是关闭应用，冻它会屏蔽这个弹窗。如果无法响应的是重要且限时应答的系统服务，此时应用会被系统认为严重异常而杀死，同时在 **/data/anr/** 下输出异常日志。
+1. <strong id="应用无响应">应用无响应(ANR)</strong> ：应用在冻结状态，超时没有响应系统某些服务或状态问询时，系统会弹窗提示 ***XXX应用未响应*** 询问等待还是关闭应用，如果无法响应的是重要且限时应答的系统服务，此时应用会被系统认为严重异常而杀死，同时在 **/data/anr/** 下输出异常日志。**冻它会屏蔽系统ANR组件处理或杀死应用**。
 
-1. <strong id="唤醒锁">唤醒锁(WakeupLock)处理</strong> ：应用一旦获得唤醒锁，系统将不会进入待机休眠，即使息屏待机状态的CPU会一直保持运转，如果应用被冻结则无法主动释放唤醒锁。冻它会禁止设为冻结的应用获得唤醒锁。而设为播放不冻结的应用允许获得，但是冻结时会将其唤醒锁权限设为可忽略，解冻时恢复。
+1. <strong id="唤醒锁">唤醒锁(WakeupLock)</strong> ：一旦有应用获得唤醒锁而没有释放，系统即使息屏待机状态也不会进入Doze休眠，CPU会一直保持运转，如果应用被冻结则无法主动释放唤醒锁。**冻它只允许系统应用和自由后台应用获得唤醒锁**。
 
-1. <strong id="定时器">定时器(Alarm)处理</strong> ：应用一旦设置了定时器，到了其设定的时间会被系统唤醒运行，这种后台唤醒操作及其唤醒后的运行都是在后台默默运行，产生不必要耗电，因此冻它会禁止黑名单及播放中不冻结的应用设定定时器。
+1. <strong id="定时器">定时器(Alarm)</strong> ：应用一旦设置了定时器，到了其设定的时间会被系统唤醒运行，这种后台唤醒操作及其唤醒后的运行都是在后台默默运行，产生不必要耗电。**冻它只允许系统应用和自由后台应用设定定时器**。
 
 1. <strong id="JobScheduler">JobScheduler</strong> ：Doze期间系统会停止JobScheduler执行。
 
 1. <strong id="Standby">Standby</strong> ：冻结状态不需要Standby。
 
-1. <strong id="传感器">传感器(SENSOR)</strong> ：TODO 暂不处理。sensor 的开启会导致 cpu 的唤醒。
-
+1. <strong id="传感器">传感器(sensor)</strong> ：某些传感器(运动传感器)会在息屏Doze期间唤醒CPU打断休眠(冻它使用强制深度Doze,不受影响)。
 
 ## 冻它Xposed说明：电量与性能
 
@@ -228,24 +229,17 @@ excerpt: 冻它相关介绍，冻结模式，面具模块、Xposed模块作用�
 
 ---
 
-## 冻它APP预览
-
-![冻它APP预览](/images/app_preview.png)
-
----
-
 ## 相关链接
 
-[酷安 @JARK006](https://www.coolapk.com/u/1212220)
+<div align="center">
+<a href="https://www.coolapk.com/u/1212220">酷安 @JARK006</a>&nbsp;&nbsp;&nbsp;
+<a href="https://github.com/jark006/freezeitRelease">Github发布页</a>&nbsp;&nbsp;&nbsp;
+<a href="https://jark006.lanzout.com/b017oz9if">蓝奏云 密码: dy6i</a>
+</div>
 
-[Github 发布页面](https://github.com/jark006/freezeitRelease)
-
-[蓝奏云](https://jark006.lanzout.com/b017oz9if) 密码: dy6i
-
-[QQ群组 781222669](https://jq.qq.com/?_wv=1027&k=Q5aVUglt)
-
-[QQ频道 冻它模块](https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=1W6opB7&businessType=9&from=246610&biz=ka)
-
-[Telegram 群组](https://t.me/+sjDX1oTk31ZmYjY1)
-
-[Telegram 频道](https://t.me/freezeitRelease)
+<div align="center">
+<a href="https://jq.qq.com/?_wv=1027&k=Q5aVUglt">QQ群组 781222669</a>&nbsp;&nbsp;&nbsp;
+<a href="https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=1W6opB7&businessType=9&from=246610&biz=ka">QQ频道 冻它模块</a>&nbsp;&nbsp;&nbsp;
+<a href="https://t.me/+sjDX1oTk31ZmYjY1">Telegram 群组</a>&nbsp;&nbsp;&nbsp;
+<a href="https://t.me/freezeitRelease">Telegram 频道</a>
+</div>
