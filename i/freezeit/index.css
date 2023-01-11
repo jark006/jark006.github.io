@@ -22,7 +22,7 @@ p {
 }
 
 #main {
-    background-image: url("./bg.png");
+    background: rgb(58, 64, 75);
     background-size: 100% 100%;
     background-repeat: no-repeat;
     -webkit-background-size: cover;
@@ -442,7 +442,7 @@ p {
     }
 
     #main-content .title {
-        font-size: 3.5em
+        font-size: 3em
     }
 
     #main-content .sub-title {
