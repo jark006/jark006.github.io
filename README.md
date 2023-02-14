@@ -5,4 +5,4 @@
 Record something.
 
 ---
-<center>©2022 JARK006 | <a href="https://github.com/barryclark/jekyll-now" style="font-size:18px;">Power by barryclark/jekyll-now</a></center>
+<center><a href="https://github.com/jark006" style="font-size:18px;">©2023 JARK006</a></center>
