@@ -1,6 +1,6 @@
 ---
 layout: post_notitle
-title: 冻它说明
+title: 冻它说明及教程
 header-style: text
 comments: false
 excerpt: 冻它相关介绍，冻结模式，教程等等
@@ -8,7 +8,7 @@ excerpt: 冻它相关介绍，冻结模式，教程等等
 
 
 <div align="center">
-<img src = "/images/logo.png" style="height:80px"/>
+<img src = "/images/freezeit/logo.png" style="height:80px"/>
 <br>
 <font size="6"><strong>{{ page.title }}</strong></font>
 <br>
@@ -86,13 +86,13 @@ excerpt: 冻它相关介绍，冻结模式，教程等等
 
 1. 请不要与其他功能类似的 **墓碑模块** 一同使用，避免冲突，暂时与系统自带的 **暂停执行已缓存的应用** 无冲突。
 
-1. 底层进程与App通信采用TCP_SOCKET(本地环回 **127.0.0.1:60613** ，模块为Server，APP为Client)，因此冻它APP需要网络通信权限，通信范围仅限本机内部，若有疑虑可查看 [APP源码](https://github.com/jark006/freezeitapp)。
+1. 底层进程与冻它管理器通信采用TCP_SOCKET(本地环回 **127.0.0.1:60613** ，模块为Server，冻它管理器为Client)，因此冻它管理器需要网络通信权限，通信范围仅限本机内部，若有疑虑可查看 [冻它管理器源码](https://github.com/jark006/freezeitapp)。
 
 1. 部分系统辅助类应用以第三方应用形式存在(可以像普通应用那样卸载掉)，被冻结后会导致系统异常，请手动设为自由后台，若发现此类应用(一般是天气、录音之类的应用)，请及时反馈给作者加入内置自由后台，给其他人避坑。
 
 1. 在**MIUI13/14**中，为防止机制冲突，冻它会禁用系统自带的墓碑机制 **Millet** 。
 
-1. 模块的文件大多位于模块自身目录内，但异常日志除外，运行时发生的异常日志会追加到: **/sdcard/Android/freezeit_crash_log.txt** ，若存在该文件，请向作者反馈其内容。若运行一切正常，则不会出现该文件。卸载模块时，该文件会一同被删除，同时也会自动卸载冻它APP, 不会留下其他额外垃圾文件。
+1. 模块的文件大多位于模块自身目录内，但异常日志除外，运行时发生的异常日志会追加到: **/sdcard/Android/freezeit_crash_log.txt** ，若存在该文件，请向作者反馈其内容。若运行一切正常，则不会出现该文件。卸载模块时，该文件会一同被删除，同时也会自动卸载冻它管理器, 不会留下其他额外垃圾文件。
 
 1. 如果使用冻它过程开启了Doze功能，系统的 **电池优化白名单** 会被替换成冻它的 **自由后台(包括内置)应用** ，也就是说，**自由后台** 应用会设为 **电池不优化**，而 **Freezer冻结、SIGSTOP冻结和杀死后台** 的应用设为 **电池优化**，卸载冻它不会主动还原这些改动，用户有需要可以自行重新设置。(冻它3.0起，黑名单应用只会移出“电池不优化”，但“自由后台”不会再加入“电池不优化”)
 
@@ -142,15 +142,15 @@ excerpt: 冻它相关介绍，冻结模式，教程等等
 
     1. 把QQ设为 **Freezer断网** 或者 **SIGSTOP断网**，此时可以去冻结或杀死 **QQ**，测试是否可以接收信息推送，该推送弹窗图标是QQ的图标。如果图标是对方/群头像，则说明该弹窗是QQ自己弹的，不是HMSPush或第三方推送平台的。
 
-        ![P1](/images/2022-11-15P4.jpg)
+        ![P1](/images/freezeit/2022-11-15P4.jpg)
 
 1. <strong id="检查冻结状态">检查冻结状态</strong>
     
     冻它进行冻结操作后，如果是FreezerV1模式，冻结可能会延迟甚至无法冻结，此时可以换成SIGSTOP，其冻结方式较为彻底。
 
-    1. 点击冻它APP日志页的 **雪花按钮**，日志会列出当前进程状态，可以检查是否被冻结。
+    1. 点击冻它管理器日志页的 **雪花按钮**，日志会列出当前进程状态，可以检查是否被冻结。
 
-        ![P1](/images/2022-11-15P3.jpg)
+        ![P1](/images/freezeit/2022-11-15P3.jpg)
 
     1. 如果是其他墓碑，请使用 **Termux终端** ([官网](https://termux.dev/cn/index.html) / [V0.118下载](https://f-droid.org/repo/com.termux_118.apk))，或者使用MT管理器里面的“终端模拟器”，选择以下其中一个命令执行，原理是读取各进程的wchan状态值进行判断：
 
@@ -160,7 +160,7 @@ excerpt: 冻它相关介绍，冻结模式，教程等等
         ps -A | grep -E "refrigerator|do_freezer|signal|freezable_schedule"
         ```
 
-        ![P1](/images/2022-11-15P1.jpg)
+        ![P1](/images/freezeit/2022-11-15P1.jpg)
 
     1. 以下命令会显示所有安卓应用进程的状态信息，无论是否**冻结状态**，先执行 **su**，再执行以下命令：
 
@@ -168,7 +168,7 @@ excerpt: 冻它相关介绍，冻结模式，教程等等
         ps -A | grep u0_a
         ```
 
-        ![P1](/images/2022-11-15P2.jpg)
+        ![P1](/images/freezeit/2022-11-15P2.jpg)
 
 
         - FreezerV1冻结状态: [**__refrigerator**](https://cs.android.com/android/kernel/superproject/+/common-android11-5.4:common/kernel/freezer.c;drc=0e48f51cbbfbdb79149806de14dcb8bf0f01ca94;l=56)

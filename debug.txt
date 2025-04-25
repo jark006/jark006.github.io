@@ -7,4 +7,4 @@
 在本目录下开始调试：
 
 jekyll serve
-jekyll serve -H 0.0.0.0 -P 80
+jekyll serve -H 127.0.0.1 -P 80
