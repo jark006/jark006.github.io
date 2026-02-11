@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARK006的生命时光轴</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Noto Sans SC', sans-serif;
+            color: #fff;
+            overflow-x: hidden;
+            background: #0a0a0f;
+        }
+
+        /* 动态背景 */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .gradient-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f0f1a 100%);
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.3) 0%, transparent 70%);
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 107, 107, 0.25) 0%, transparent 70%);
+            bottom: -150px;
+            right: -100px;
+            animation-delay: -7s;
+        }
+
+        .orb-3 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(78, 205, 196, 0.3) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(50px, -30px) scale(1.1); }
+            50% { transform: translate(-30px, 50px) scale(0.95); }
+            75% { transform: translate(-50px, -20px) scale(1.05); }
+        }
+
+        /* 粒子效果 */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 头部 */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff, #00ff88, #ff6b6b);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 5s ease infinite;
+            text-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 10px;
+            letter-spacing: 3px;
+        }
+
+        /* 玻璃卡片 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 35px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(180deg, #00d4ff, #00ff88);
+            border-radius: 2px;
+        }
+
+        /* 出生信息 */
+        .birth-info {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .birth-date {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .birth-detail {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.8;
+        }
+
+        .birth-detail span {
+            display: block;
+        }
+
+        .timezone {
+            font-size: 0.85rem;
+            color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        /* 实时年龄展示 - 核心区域 */
+        .age-display {
+            text-align: center;
+            padding: 50px 30px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 255, 136, 0.05));
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .age-display::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .age-label {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .age-main {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .age-unit {
+            display: inline-block;
+            margin: 0 8px;
+        }
+
+        .age-number {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        .age-text {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .total-seconds {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .seconds-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .seconds-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: #ff6b6b;
+            text-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            letter-spacing: 2px;
+        }
+
+        /* 生命进度 */
+        .life-progress {
+            padding: 40px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .progress-percentage {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-bar-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            height: 30px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #00d4ff, #ff6b6b);
+            border-radius: 20px;
+            position: relative;
+            transition: width 1s ease;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* 生命方块网格 */
+        .life-grid {
+            display: grid;
+            grid-template-columns: repeat(30, 1fr);
+            gap: 3px;
+            margin-top: 30px;
+        }
+
+        .life-block {
+            aspect-ratio: 1;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .life-block.lived {
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .life-block.future {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .life-block:hover {
+            transform: scale(1.5);
+            z-index: 10;
+        }
+
+        .life-block.current {
+            background: #ff6b6b;
+            animation: currentPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes currentPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 107, 107, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(255, 107, 107, 0.8); }
+        }
+
+        .grid-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+
+        .legend-color.lived {
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+        }
+
+        .legend-color.current {
+            background: #ff6b6b;
+        }
+
+        .legend-color.future {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* 统计卡片 - 修复部分 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 25px 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 8px;
+            word-break: break-all;
+            line-height: 1.3;
+        }
+
+        .stat-value .unit {
+            font-size: 0.9rem;
+            color: rgba(0, 212, 255, 0.7);
+            margin-left: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* 下次生日 */
+        .next-birthday {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .birthday-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .birthday-countdown {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .countdown-item {
+            text-align: center;
+            padding: 15px 18px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            min-width: 70px;
+        }
+
+        .countdown-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+
+        .countdown-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 5px;
+        }
+
+        /* 名言 */
+        .quote-section {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.05), rgba(0, 212, 255, 0.05));
+        }
+
+        .quote-text {
+            font-size: 1.3rem;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .quote-author {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.85rem;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .birth-date {
+                font-size: 1.8rem;
+            }
+            
+            .age-main {
+                font-size: 2rem;
+            }
+            
+            .age-number {
+                font-size: 2.5rem;
+            }
+            
+            .life-grid {
+                grid-template-columns: repeat(15, 1fr);
+            }
+            
+            .progress-percentage {
+                font-size: 2rem;
+            }
+            
+            .seconds-value {
+                font-size: 1.5rem;
+            }
+
+            .stat-value {
+                font-size: 1.3rem;
+            }
+
+            .countdown-value {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景 -->
+    <div class="background">
+        <div class="gradient-bg"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <div class="container">
+        <!-- 头部 -->
+        <header class="header">
+            <h1>JARK006的生命时光轴</h1>
+        </header>
+
+        <!-- 出生信息 -->
+        <div class="glass-card">
+            <div class="card-title">出生时刻</div>
+            <div class="birth-info">
+                <div class="birth-date">1995.07.10</div>
+                <div class="birth-detail">
+                    <span>下午 15:10</span>
+                    <span class="timezone">UTC+8 北京时间</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 实时年龄展示 -->
+        <div class="glass-card age-display">
+            <div class="age-label">当前年龄</div>
+            <div class="age-main">
+                <span class="age-unit">
+                    <span class="age-number" id="years">0</span>
+                    <span class="age-text">岁</span>
+                </span>
+                <span class="age-unit">
+                    <span class="age-number" id="months">0</span>
+                    <span class="age-text">月</span>
+                </span>
+                <span class="age-unit">
+                    <span class="age-number" id="days">0</span>
+                    <span class="age-text">日</span>
+                </span>
+            </div>
+            <div class="age-main" style="font-size: 2rem;">
+                <span class="age-unit">
+                    <span class="age-number" id="hours" style="font-size: 2rem;">0</span>
+                    <span class="age-text">时</span>
+                </span>
+                <span class="age-unit">
+                    <span class="age-number" id="minutes" style="font-size: 2rem;">0</span>
+                    <span class="age-text">分</span>
+                </span>
+                <span class="age-unit">
+                    <span class="age-number" id="seconds" style="font-size: 2rem;">0</span>
+                    <span class="age-text">秒</span>
+                </span>
+            </div>
+            <div class="total-seconds">
+                <div class="seconds-label">生命总秒数</div>
+                <div class="seconds-value" id="totalSeconds">0</div>
+            </div>
+        </div>
+
+        <!-- 生命进度 -->
+        <div class="glass-card life-progress">
+            <div class="card-title">生命进度 · 假设寿命90岁</div>
+            <div class="progress-header">
+                <div>
+                    <div style="font-size: 0.9rem; color: rgba(255,255,255,0.5);">已走过的人生旅程</div>
+                    <div class="progress-percentage" id="lifePercentage">0%</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.9rem; color: rgba(255,255,255,0.5);">预计剩余</div>
+                    <div style="font-size: 1.5rem; color: #00ff88;" id="remainingYears">0 年</div>
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            </div>
+            
+            <!-- 生命方块网格 - 每个方块代表一年，90年 -->
+            <div class="life-grid" id="lifeGrid"></div>
+            
+            <div class="grid-legend">
+                <div class="legend-item">
+                    <div class="legend-color lived"></div>
+                    <span>已度过</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color current"></div>
+                    <span>当前年份</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color future"></div>
+                    <span>未来</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 详细统计 -->
+        <div class="glass-card">
+            <div class="card-title">生命统计</div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalDays">0</div>
+                    <div class="stat-label">总天数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalHours">0</div>
+                    <div class="stat-label">总小时数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="weekNumber">0</div>
+                    <div class="stat-label">总周数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="heartbeats">0</div>
+                    <div class="stat-label">心跳次数(72/min估算)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="breaths">0</div>
+                    <div class="stat-label">呼吸次数(16/min估算)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="moonCycles">0</div>
+                    <div class="stat-label">经历满月</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 下次生日 -->
+        <div class="glass-card">
+            <div class="card-title">下次生日</div>
+            <div class="next-birthday">
+                <div class="birthday-info">
+                    <h3 id="nextBirthdayDate">2024年7月10日</h3>
+                    <p style="color: rgba(255,255,255,0.6);" id="birthdayAge">将迎来第 30 个生日</p>
+                </div>
+                <div class="birthday-countdown">
+                    <div class="countdown-item">
+                        <div class="countdown-value" id="bdDays">0</div>
+                        <div class="countdown-label">天</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-value" id="bdHours">0</div>
+                        <div class="countdown-label">时</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-value" id="bdMinutes">0</div>
+                        <div class="countdown-label">分</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-value" id="bdSeconds">0</div>
+                        <div class="countdown-label">秒</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 名言 -->
+        <div class="glass-card quote-section">
+            <div class="quote-text">
+                "人生天地之间，若白驹之过隙，忽然而已。"
+            </div>
+            <div class="quote-author">—— 庄子《知北游》</div>
+        </div>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <p>珍惜每一刻 · 活在当下</p>
+        </footer>
+    </div>
+
+    <script>
+        // 出生时间：1995年7月10日 15:10 UTC+8
+        const birthDate = new Date('1995-07-10T15:10:00+08:00');
+        const LIFE_EXPECTANCY = 90; // 预期寿命
+
+        // 创建粒子
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 3 + 's';
+                particle.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // 创建生命方块网格
+        function createLifeGrid() {
+            const grid = document.getElementById('lifeGrid');
+            const now = new Date();
+            const currentYear = (now - birthDate) / (1000 * 60 * 60 * 24 * 365.25);
+            
+            for (let i = 0; i < LIFE_EXPECTANCY; i++) {
+                const block = document.createElement('div');
+                block.className = 'life-block';
+                
+                if (i < Math.floor(currentYear)) {
+                    block.classList.add('lived');
+                    block.title = `${i + 1}岁 - 已度过`;
+                } else if (i === Math.floor(currentYear)) {
+                    block.classList.add('current');
+                    block.title = `${i + 1}岁 - 当前年份`;
+                } else {
+                    block.classList.add('future');
+                    block.title = `${i + 1}岁 - 未来`;
+                }
+                
+                grid.appendChild(block);
+            }
+        }
+
+        // 计算年龄详情
+        function calculateAge() {
+            const now = new Date();
+            
+            let years = now.getFullYear() - birthDate.getFullYear();
+            let months = now.getMonth() - birthDate.getMonth();
+            let days = now.getDate() - birthDate.getDate();
+            let hours = now.getHours() - birthDate.getHours();
+            let minutes = now.getMinutes() - birthDate.getMinutes();
+            let seconds = now.getSeconds() - birthDate.getSeconds();
+            
+            if (seconds < 0) { seconds += 60; minutes--; }
+            if (minutes < 0) { minutes += 60; hours--; }
+            if (hours < 0) { hours += 24; days--; }
+            if (days < 0) {
+                months--;
+                const lastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                days += lastMonth.getDate();
+            }
+            if (months < 0) { months += 12; years--; }
+            
+            return { years, months, days, hours, minutes, seconds };
+        }
+
+        // 格式化大数字（转换为亿/万单位）
+        function formatLargeNumber(num) {
+            if (num >= 100000000) {
+                return (num / 100000000).toFixed(2) + '<span class="unit">亿</span>';
+            } else if (num >= 10000) {
+                return (num / 10000).toFixed(1) + '<span class="unit">万</span>';
+            }
+            return num.toLocaleString();
+        }
+
+        // 格式化数字（添加千分位）
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // 计算下次生日
+        function calculateNextBirthday() {
+            const now = new Date();
+            let nextBirthday = new Date(now.getFullYear(), 6, 10, 15, 10, 0);
+            
+            if (nextBirthday < now) {
+                nextBirthday = new Date(now.getFullYear() + 1, 6, 10, 15, 10, 0);
+            }
+            
+            const diff = nextBirthday - now;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            const turningAge = nextBirthday.getFullYear() - birthDate.getFullYear();
+            
+            return { days, hours, minutes, seconds, date: nextBirthday, turningAge };
+        }
+
+        // 更新显示
+        function updateDisplay() {
+            const now = new Date();
+            const age = calculateAge();
+            const totalMs = now - birthDate;
+            const totalSecondsVal = Math.floor(totalMs / 1000);
+            const totalDays = Math.floor(totalSecondsVal / 86400);
+            const totalHours = Math.floor(totalSecondsVal / 3600);
+            const weeks = Math.floor(totalSecondsVal / (86400 * 7));
+            const moonCycles = Math.floor(totalSecondsVal / (86400 * 29.53));
+            
+            // 估算心跳（平均每分钟72次）和呼吸（平均每分钟16次）
+            const heartbeats = Math.floor(totalSecondsVal * 72 / 60);
+            const breaths = Math.floor(totalSecondsVal * 16 / 60);
+            
+            // 更新年龄显示
+            document.getElementById('years').textContent = age.years;
+            document.getElementById('months').textContent = age.months;
+            document.getElementById('days').textContent = age.days;
+            document.getElementById('hours').textContent = age.hours;
+            document.getElementById('minutes').textContent = age.minutes;
+            document.getElementById('seconds').textContent = age.seconds;
+            document.getElementById('totalSeconds').textContent = formatNumber(totalSecondsVal);
+            
+            // 更新生命进度
+            const lifePercentage = (totalMs / (LIFE_EXPECTANCY * 365.25 * 24 * 60 * 60 * 1000)) * 100;
+            document.getElementById('lifePercentage').textContent = lifePercentage.toFixed(4) + '%';
+            document.getElementById('progressBar').style.width = Math.min(lifePercentage, 100) + '%';
+            
+            const remainingYears = LIFE_EXPECTANCY - (totalMs / (1000 * 60 * 60 * 24 * 365.25));
+            document.getElementById('remainingYears').textContent = remainingYears.toFixed(2) + ' 年';
+            
+            // 更新统计 - 使用格式化的大数字
+            document.getElementById('totalDays').innerHTML = formatNumber(totalDays);
+            document.getElementById('totalHours').innerHTML = formatNumber(totalHours);
+            document.getElementById('weekNumber').innerHTML = formatNumber(weeks);
+            document.getElementById('heartbeats').innerHTML = formatNumber(heartbeats);
+            document.getElementById('breaths').innerHTML = formatNumber(breaths);
+            document.getElementById('moonCycles').innerHTML = formatNumber(moonCycles);
+            
+            // 更新生日倒计时
+            const birthday = calculateNextBirthday();
+            document.getElementById('nextBirthdayDate').textContent = 
+                `${birthday.date.getFullYear()}年${birthday.date.getMonth() + 1}月${birthday.date.getDate()}日`;
+            document.getElementById('birthdayAge').textContent = `将迎来第 ${birthday.turningAge} 个生日`;
+            document.getElementById('bdDays').textContent = birthday.days;
+            document.getElementById('bdHours').textContent = birthday.hours;
+            document.getElementById('bdMinutes').textContent = birthday.minutes;
+            document.getElementById('bdSeconds').textContent = birthday.seconds;
+        }
+
+        // 初始化
+        function init() {
+            createParticles();
+            createLifeGrid();
+            updateDisplay();
+            setInterval(updateDisplay, 1000);
+        }
+
+        init();
+    </script>
+</body>
+</html>
