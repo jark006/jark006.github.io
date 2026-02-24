@@ -620,6 +620,8 @@
         <!-- 头部 -->
         <header class="header">
             <h1>JARK006的生命时光轴</h1>
+            <br>网站后面添加参数可自定义出生时间，例如
+            <br>https://jark006.github.io/i/lifetimeline/?birthDate=1995-07-10T15:10:00
         </header>
 
         <!-- 出生信息 -->
@@ -782,10 +784,38 @@
     </div>
 
     <script>
-        // 出生时间：1995年7月10日 15:10 UTC+8
-        const birthDate = new Date('1995-07-10T15:10:00+08:00');
-        const LIFE_EXPECTANCY = 90; // 预期寿命
+        // 从URL参数获取出生时间
+        function getBirthDateFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const dateStr = params.get('birthDate');
+                    
+            if (dateStr) {
+                const parsed = new Date(dateStr + "+08:00");
+                if (!isNaN(parsed.getTime())) {
+                    return parsed;
+                }
+            }
+            return null;
+        }
 
+        const defaultBirthDate = new Date('1995-07-10T15:10:00+08:00');
+        const birthDate = getBirthDateFromUrl() || defaultBirthDate;
+        const LIFE_EXPECTANCY = 90; // 预期寿命
+        
+        // 更新出生日期显示
+        function updateBirthInfo() {
+            const year = birthDate.getFullYear();
+            const month = String(birthDate.getMonth() + 1).padStart(2, '0');
+            const day = String(birthDate.getDate()).padStart(2, '0');
+            const hours = birthDate.getHours();
+            const minutes = String(birthDate.getMinutes()).padStart(2, '0');
+            
+            const period = hours < 6 ? '凌晨' : (hours < 12 ? '上午' : (hours < 18 ? '下午' : '晚上'));
+            
+            document.querySelector('.birth-date').textContent = `${year}.${month}.${day}`;
+            document.querySelector('.birth-detail span:first-child').textContent = `${period} ${hours}:${minutes}`;
+        }
+        
         // 创建粒子
         function createParticles() {
             const container = document.getElementById('particles');
@@ -937,6 +967,7 @@
 
         // 初始化
         function init() {
+            updateBirthInfo();
             createParticles();
             createLifeGrid();
             updateDisplay();
