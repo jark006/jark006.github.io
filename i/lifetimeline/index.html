@@ -897,10 +897,16 @@
         // 计算下次生日
         function calculateNextBirthday() {
             const now = new Date();
-            let nextBirthday = new Date(now.getFullYear(), 6, 10, 15, 10, 0);
+            const birthMonth = birthDate.getMonth();
+            const birthDay = birthDate.getDate();
+            const birthHours = birthDate.getHours();
+            const birthMinutes = birthDate.getMinutes();
+            const birthSeconds = birthDate.getSeconds();
+            
+            let nextBirthday = new Date(now.getFullYear(), birthMonth, birthDay, birthHours, birthMinutes, birthSeconds);
             
             if (nextBirthday < now) {
-                nextBirthday = new Date(now.getFullYear() + 1, 6, 10, 15, 10, 0);
+                nextBirthday = new Date(now.getFullYear() + 1, birthMonth, birthDay, birthHours, birthMinutes, birthSeconds);
             }
             
             const diff = nextBirthday - now;
