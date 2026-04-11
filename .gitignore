@@ -1,0 +1,10 @@
+_site
+.claude
+.omx
+.jekyll
+.jekyll-cache
+.bundle
+.sass-cache
+.playwright-mcp
+Gemfile
+Gemfile.lock

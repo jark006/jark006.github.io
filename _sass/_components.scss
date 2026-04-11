@@ -1,0 +1,309 @@
+// ============================================================
+// Components — Scroll to top, TOC, Lightbox, Progress bar, Code copy
+// ============================================================
+
+// Reading progress bar (top of page)
+.reading-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+  width: 0%;
+  z-index: 101;
+  transition: width 100ms linear;
+  border-radius: 0 1px 1px 0;
+}
+
+// Scroll to top button
+.scroll-top-btn {
+  position: fixed;
+  bottom: $space-xl;
+  right: $space-xl;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: $shadow-md;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: all $duration-normal $ease;
+  z-index: 50;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  &:hover {
+    background: var(--accent);
+    color: var(--bg-primary);
+    border-color: var(--accent);
+    box-shadow: $shadow-lg;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+// Table of Contents (sidebar - left side)
+.toc-sidebar {
+  position: fixed;
+  top: 5rem;
+  left: max(1rem, calc((100vw - 960px) / 2 - 200px));
+  width: 180px;
+  max-height: calc(100vh - 8rem);
+  overflow-y: auto;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .toc-title {
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: $space-sm;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.6875rem;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    display: block;
+    padding: 0.2em 0;
+    color: var(--text-muted);
+    border-right: 2px solid transparent;
+    padding-right: $space-sm;
+    transition: all $duration-fast;
+    line-height: 1.4;
+
+    &:hover {
+      color: var(--text-primary);
+    }
+
+    &.active {
+      color: var(--accent);
+      border-right-color: var(--accent);
+    }
+  }
+
+  // Nested levels (h3 under h2)
+  .toc-sublist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    a {
+      padding-right: $space-lg;
+      font-size: 0.6875rem;
+    }
+  }
+}
+
+// Mobile TOC toggle
+.mobile-toc-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: $space-sm $space-md;
+  border-radius: $radius;
+  font-size: 0.8125rem;
+  font-family: $font-sans;
+  gap: $space-sm;
+  align-items: center;
+  transition: all $duration-fast;
+  margin-bottom: $space-md;
+
+  &:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+  }
+}
+
+.mobile-toc {
+  display: none;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: $radius;
+  padding: $space-md;
+  margin-bottom: $space-lg;
+
+  &.open {
+    display: block;
+  }
+
+  a {
+    display: block;
+    padding: 0.3em $space-sm;
+    color: var(--text-secondary);
+    border-right: 2px solid transparent;
+    font-size: 0.8125rem;
+
+    &:hover {
+      color: var(--text-primary);
+    }
+
+    &.active {
+      color: var(--accent);
+      border-right-color: var(--accent);
+    }
+  }
+
+  .toc-sublist a {
+    padding-right: $space-lg;
+    font-size: 0.75rem;
+  }
+}
+
+// Code block copy button
+.code-block-wrapper {
+  position: relative;
+
+  .code-copy-btn {
+    position: absolute;
+    top: $space-xs;
+    right: $space-xs;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: $space-xs $space-sm;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    font-size: 0.6875rem;
+    font-family: $font-sans;
+    opacity: 0;
+    transition: all $duration-fast;
+    z-index: 10;
+
+    &:hover {
+      opacity: 1 !important;
+      color: var(--text-primary);
+      background: var(--bg-secondary);
+    }
+
+    &.copied {
+      color: var(--success) !important;
+    }
+  }
+
+  &:hover .code-copy-btn {
+    opacity: 0.7;
+  }
+}
+
+// Lightbox
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+  opacity: 0;
+  transition: opacity $duration-normal;
+  pointer-events: none;
+
+  &.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    cursor: default;
+    border-radius: 0;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: $space-md;
+    right: $space-md;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background $duration-fast;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+// Fade-in on scroll
+.fade-in {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive TOC — only show on large screens (PC/tablet)
+@media (max-width: 1200px) {
+  .toc-sidebar {
+    display: none;
+  }
+
+  // Hide mobile TOC on small screens (phones)
+  .mobile-toc-toggle {
+    display: none;
+  }
+
+  .mobile-toc {
+    display: none !important;
+  }
+}

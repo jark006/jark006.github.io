@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: 'zh-CN' }}" x-data="theme()" x-bind:class="{ 'light-theme': themeName === 'light' }">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  {% seo %}
+
+  <link rel="icon" href="{{ '/favicon.ico' | relative_url }}" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+
+  <!-- Feed -->
+  {% feed_meta %}
+
+  <!-- Alpine.js (deferred) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js"></script>
+</head>
+
+<body x-data="scrollTop()">
+  <!-- Reading progress bar -->
+  {% if page.layout == 'post' or page.layout == 'post_notitle' %}
+  <div class="reading-progress-bar" x-data="readingProgress()" x-on:scroll.window="onScroll()" x-init="onScroll()"></div>
+  {% endif %}
+
+  <!-- Header -->
+  {% include header.html %}
+
+  <!-- Main content -->
+  <main class="container {% if page.toc %}container--wide{% endif %}">
+    {{ content }}
+  </main>
+
+  <!-- Footer -->
+  {% include footer.html %}
+
+  <!-- Scroll to top — uses :class instead of x-show so it always stays mounted -->
+  <button class="scroll-top-btn" :class="visible ? 'visible' : ''" @click="scrollToTop" aria-label="返回顶部">
+    <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+  </button>
+
+  <!-- Lightbox -->
+  <div class="lightbox" x-data="lightbox()" @click.self="close()" x-show="open" x-on:keydown.escape.window="close()" x-cloak>
+    <button class="lightbox-close" @click="close()" aria-label="关闭">&times;</button>
+    <img :src="src" :alt="alt">
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">已复制到剪贴板</div>
+
+  <!-- Scripts -->
+  <script src="{{ '/assets/js/main.js' | relative_url }}" defer></script>
+
+  <!-- Inline Alpine components -->
+  <script>
+    // Theme manager
+    function theme() {
+      return {
+        themeName: 'dark',
+        init() {
+          const stored = localStorage.getItem('theme');
+          if (stored) {
+            this.themeName = stored;
+          } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+            this.themeName = 'light';
+          }
+          document.documentElement.classList.toggle('light-theme', this.themeName === 'light');
+        },
+        toggle() {
+          this.themeName = this.themeName === 'dark' ? 'light' : 'dark';
+          localStorage.setItem('theme', this.themeName);
+          document.documentElement.classList.toggle('light-theme', this.themeName === 'light');
+        }
+      }
+    }
+
+    // Reading progress
+    function readingProgress() {
+      return {
+        onScroll() {
+          const el = document.documentElement;
+          const scrollTop = el.scrollTop || (document.body?.scrollTop ?? 0);
+          const scrollHeight = el.scrollHeight - el.clientHeight;
+          const pct = scrollHeight > 0 ? (scrollTop / scrollHeight * 100) : 0;
+          document.querySelector('.reading-progress-bar')?.style.setProperty('width', pct + '%');
+        }
+      }
+    }
+
+    // Scroll to top
+    function scrollTop() {
+      return {
+        visible: false,
+        init() {
+          window.addEventListener('scroll', () => {
+            this.visible = window.scrollY > 300;
+          }, { passive: true });
+        },
+        scrollToTop() {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+    }
+
+    // Lightbox
+    function lightbox() {
+      return {
+        open: false,
+        src: '',
+        alt: '',
+        show(src, alt) {
+          this.src = src;
+          this.alt = alt || '';
+          this.open = true;
+          document.body.style.overflow = 'hidden';
+        },
+        close() {
+          this.open = false;
+          document.body.style.overflow = '';
+        }
+      }
+    }
+  </script>
+
+  <style>
+    [x-cloak] { display: none !important; }
+  </style>
+</body>
+</html>

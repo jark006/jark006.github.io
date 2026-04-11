@@ -1,0 +1,177 @@
+// ============================================================
+// Code Highlighting — GitHub Dark Theme (Rouge with line numbers)
+// ============================================================
+
+// Reset nested elements
+div.highlighter-rouge,
+div.highlighter-rouge div.highlight,
+div.highlighter-rouge pre,
+div.highlighter-rouge code {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
+}
+
+// Code block container
+.highlight {
+  margin: $space-lg 0;
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: $radius;
+  overflow: hidden;
+}
+
+// Rouge table layout (with line numbers)
+.highlight table.rouge-table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin: 0;
+  width: 100%;
+}
+
+// Line numbers column — fixed on the left
+.highlight .rouge-gutter {
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--code-border);
+  user-select: none;
+  width: 1%;
+  white-space: nowrap;
+  vertical-align: top;
+
+  pre {
+    margin: 0;
+    padding: 0;
+    font-size: 0.8125rem;
+    font-family: $font-mono;
+    line-height: 1.6;
+    color: var(--text-muted);
+    text-align: right;
+  }
+}
+
+// Code column — horizontal scroll here
+.highlight .rouge-code {
+  vertical-align: top;
+  max-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  pre {
+    margin: 0;
+    padding: 0;
+    font-size: 0.8125rem;
+    font-family: $font-mono;
+    line-height: 1.6;
+    color: var(--text-primary);
+    white-space: pre;
+    display: block;
+  }
+
+  code {
+    background: none;
+    padding: 0;
+    font-size: inherit;
+    font-variant-ligatures: none;
+    white-space: pre;
+  }
+
+  // Scrollbar styling
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--code-bg);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-light);
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--text-muted);
+    }
+  }
+}
+
+// Rouge syntax tokens (GitHub Dark)
+.highlight {
+  .hll { background-color: #6e768166; display: block; }
+  .c { color: #8b949e; font-style: italic }
+  .err { color: #f85149 }
+  .k { color: #ff7b72 }
+  .o { color: #ff7b72 }
+  .cm { color: #8b949e; font-style: italic }
+  .cp { color: #8b949e; font-weight: bold; font-style: italic }
+  .c1 { color: #8b949e; font-style: italic }
+  .cs { color: #8b949e; font-weight: bold; font-style: italic }
+  .gd { color: #f85149; background-color: #490202 }
+  .ge { font-style: italic }
+  .gr { color: #f85149 }
+  .gh { color: #79c0ff }
+  .gi { color: #56d364; background-color: #0f5323 }
+  .go { color: #8b949e }
+  .gp { color: #8b949e }
+  .gs { font-weight: bold }
+  .gu { color: #79c0ff }
+  .gt { color: #ff7b72 }
+  .kc { color: #79c0ff }
+  .kd { color: #ff7b72 }
+  .kn { color: #ff7b72 }
+  .kp { color: #79c0ff }
+  .kr { color: #ff7b72 }
+  .kt { color: #ff7b72 }
+  .m { color: #a5d6ff }
+  .s { color: #a5d6ff }
+  .na { color: #d2a8ff }
+  .nb { color: #d2a8ff }
+  .nc { color: #f0883e }
+  .no { color: #79c0ff }
+  .nd { color: #d2a8ff }
+  .ni { color: #ffa657 }
+  .ne { color: #f0883e }
+  .nf { color: #d2a8ff }
+  .nl { color: #79c0ff }
+  .nn { color: #ff7b72 }
+  .nx { color: #79c0ff }
+  .nt { color: #7ee787 }
+  .nv { color: #ffa657 }
+  .ow { color: #ff7b72 }
+  .w { color: #6e7681 }
+  .mf { color: #a5d6ff }
+  .mh { color: #a5d6ff }
+  .mi { color: #a5d6ff }
+  .mo { color: #a5d6ff }
+  .sb { color: #a5d6ff }
+  .sc { color: #a5d6ff }
+  .sd { color: #a5d6ff }
+  .s2 { color: #a5d6ff }
+  .se { color: #79c0ff }
+  .sh { color: #a5d6ff }
+  .si { color: #a5d6ff }
+  .sx { color: #a5d6ff }
+  .sr { color: #7ee787 }
+  .s1 { color: #a5d6ff }
+  .ss { color: #a5d6ff }
+  .bp { color: #79c0ff }
+  .vc { color: #ffa657 }
+  .vg { color: #ffa657 }
+  .vi { color: #ffa657 }
+  .il { color: #a5d6ff }
+}
+
+// Inline code (not inside pre)
+.post-content {
+  p > code,
+  li > code,
+  td > code {
+    background: var(--code-bg);
+    padding: 0.15em 0.4em;
+    border-radius: $radius-sm;
+    font-size: 0.875em;
+    font-family: $font-mono;
+    color: var(--accent);
+  }
+}

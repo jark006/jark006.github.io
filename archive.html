@@ -1,0 +1,21 @@
+---
+layout: page
+title: 归档
+permalink: /archive/
+---
+
+<div class="fade-in">
+  <h1>归档</h1>
+  {% assign postsByYear = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+  {% for year in postsByYear %}
+  <div class="archive-group">
+    <h2 class="archive-year">{{ year.name }}</h2>
+    {% for post in year.items %}
+    <div class="archive-item">
+      <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+      <span class="date">{{ post.date | date: "%m-%d" }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>

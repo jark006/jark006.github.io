@@ -1,0 +1,37 @@
+---
+layout: page
+title: 标签
+permalink: /tags/
+---
+
+<div class="fade-in">
+  <h1>标签</h1>
+
+  {% assign tags = site.tags | sort %}
+  {% if tags.size == 0 %}
+    <p style="color: var(--text-muted);">暂无标签。</p>
+  {% else %}
+    <!-- Tag cloud -->
+    <div class="tag-cloud" style="margin-bottom: 2rem;">
+      {% for tag in tags %}
+        <a href="#{{ tag[0] | slugify }}"
+           class="tag-link {% if tag[1].size > 5 %}tag-size-xl{% elsif tag[1].size > 3 %}tag-size-lg{% elsif tag[1].size > 1 %}tag-size-md{% else %}tag-size-sm{% endif %}">
+          {{ tag[0] }} <small>({{ tag[1].size }})</small>
+        </a>
+      {% endfor %}
+    </div>
+
+    <!-- Posts per tag -->
+    {% for tag in tags %}
+    <div id="{{ tag[0] | slugify }}" class="archive-group">
+      <h2 class="archive-year" style="border: none; padding: 0;">{{ tag[0] }}</h2>
+      {% for post in tag[1] %}
+      <div class="archive-item">
+        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        <span class="date">{{ post.date | date: "%Y-%m-%d" }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  {% endif %}
+</div>

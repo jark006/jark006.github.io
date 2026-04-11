@@ -1,0 +1,155 @@
+// ============================================================
+// Base — Reset, Typography, Globals
+// ============================================================
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: $font-sans;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color $duration-normal, color $duration-normal;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg-primary);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color $duration-fast;
+
+  &:hover {
+    color: var(--accent-hover);
+  }
+}
+
+// Headings
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.35;
+  margin-top: $space-2xl;
+  margin-bottom: $space-md;
+  color: var(--text-primary);
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+h1 { font-size: clamp(1.75rem, calc(1.5rem + 1vw), 2.25rem); }
+h2 { font-size: clamp(1.5rem, calc(1.3rem + 0.8vw), 1.875rem); padding-bottom: 0.3em; border-bottom: 1px solid var(--border); }
+h3 { font-size: clamp(1.25rem, calc(1.1rem + 0.6vw), 1.5rem); }
+h4 { font-size: 1.125rem; }
+h5 { font-size: 1rem; }
+h6 { font-size: 0.875rem; color: var(--text-secondary); }
+
+// Paragraphs & lists
+p { margin-bottom: $space-md; }
+ul, ol { margin-bottom: $space-md; padding-left: $space-xl; }
+li { margin-bottom: $space-xs; }
+li > ul, li > ol { margin-bottom: 0; }
+
+// Blockquote
+blockquote {
+  border-left: 3px solid var(--accent);
+  padding: $space-sm $space-lg;
+  margin: $space-lg 0;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border-radius: 0 $radius $radius 0;
+
+  p:last-child { margin-bottom: 0; }
+}
+
+// Horizontal rule
+hr {
+  border: none;
+  height: 1px;
+  background: var(--border);
+  margin: $space-2xl 0;
+}
+
+// Tables
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: $space-lg 0;
+  font-size: 0.9375rem;
+}
+
+th, td {
+  padding: $space-sm $space-md;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+th {
+  background: var(--bg-secondary);
+  font-weight: 600;
+}
+
+tbody tr:nth-child(even) {
+  background: var(--bg-secondary);
+}
+
+// Inline code
+code:not(pre code) {
+  font-family: $font-mono;
+  font-size: 0.875em;
+  padding: 0.15em 0.4em;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: $radius-sm;
+  font-variant-ligatures: none;
+}
+
+// Images
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: $radius;
+  cursor: zoom-in;
+  transition: transform $duration-normal $ease;
+}
+
+// Figure / caption
+figure {
+  margin: $space-lg 0;
+  text-align: center;
+}
+
+figcaption {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin-top: $space-sm;
+}
+
+// Links in content
+.content a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+
+  &:hover {
+    text-decoration-thickness: 2px;
+  }
+}

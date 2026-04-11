@@ -1,0 +1,28 @@
+---
+layout: default
+---
+
+<article class="post-content fade-in" id="post-content">
+  {{ content }}
+</article>
+
+{% if page.toc or site.toc %}
+  {% include toc.html content=content %}
+{% endif %}
+
+<!-- Post: prev/next -->
+<div class="post-nav">
+  {% if page.previous %}
+  <a href="{{ page.previous.url | relative_url }}" class="post-nav-item prev">
+    <span class="label">&larr; 上一篇</span>
+    <span class="title">{{ page.previous.title }}</span>
+  </a>
+  {% endif %}
+
+  {% if page.next %}
+  <a href="{{ page.next.url | relative_url }}" class="post-nav-item next">
+    <span class="label">下一篇 &rarr;</span>
+    <span class="title">{{ page.next.title }}</span>
+  </a>
+  {% endif %}
+</div>

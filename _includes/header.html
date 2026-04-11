@@ -1,0 +1,76 @@
+<header class="site-header">
+  <div class="header-inner">
+    <a href="{{ '/' | relative_url }}" class="site-title">
+      <img class="site-avatar" src="{{ '/images/avatar.png' | relative_url }}" alt="Avatar">
+      <span>{{ site.title }}</span>
+    </a>
+    <nav class="site-nav" x-data="mobileSearch()">
+      <a href="{{ '/' | relative_url }}" class="{% if page.url == '/' %}active{% endif %}">首页</a>
+      <a href="{{ '/archive/' | relative_url }}">归档</a>
+      <a href="{{ '/tags/' | relative_url }}">标签</a>
+      <a href="{{ '/about/' | relative_url }}">关于</a>
+
+      <!-- Search -->
+      <div class="search-container" x-cloak>
+        <input class="search-input" type="text" placeholder="搜索文章..." x-model="query" x-on:input.debounce.200ms="search()" @click="open = true" autocomplete="off">
+        <template x-if="open && query.length > 0">
+          <div class="search-results" @click.outside="open = false">
+            <template x-for="item in results" :key="item.url">
+              <a :href="item.url" class="search-result-item">
+                <div class="search-result-title" x-text="item.title"></div>
+                <div class="search-result-excerpt" x-text="item.excerpt"></div>
+                <div class="search-result-date" x-text="item.date"></div>
+              </a>
+            </template>
+            <div class="search-no-results" x-show="searched && results.length === 0">无匹配结果</div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Theme toggle -->
+      <button class="theme-toggle" @click="toggle()" aria-label="切换主题">
+        <template x-if="themeName === 'dark'">
+          <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </template>
+        <template x-if="themeName === 'light'">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </template>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<script>
+// Search component
+function mobileSearch() {
+  return {
+    query: '',
+    results: [],
+    open: false,
+    searched: false,
+    posts: [],
+    async init() {
+      try {
+        const res = await fetch("{{ '/search.json' | relative_url }}");
+        const posts = await res.json();
+        this.posts = posts.map(p => ({
+          title: p.title || '',
+          url: p.url || '',
+          date: p.date || '',
+          excerpt: p.excerpt || p.content || ''
+        }));
+      } catch(e) { this.posts = []; }
+    },
+    search() {
+      if (this.query.length < 2) { this.results = []; return; }
+      const q = this.query.toLowerCase();
+      this.searched = true;
+      this.results = this.posts.filter(p =>
+        (p.title && p.title.toLowerCase().includes(q)) ||
+        (p.excerpt && p.excerpt.toLowerCase().includes(q))
+      );
+      this.open = this.results.length > 0;
+    }
+  }
+}
+</script>

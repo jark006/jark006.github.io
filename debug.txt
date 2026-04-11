@@ -1,0 +1,10 @@
+准备工作：
+下载安装Ruby： https://www.ruby-lang.org/zh_cn/downloads/
+终端下安装jekyll： gem install jekyll
+查看jekyll版本，检测是否成功安装： jekyll -v
+
+
+在本目录下开始调试：
+
+jekyll serve
+jekyll serve -H 127.0.0.1 -P 80
