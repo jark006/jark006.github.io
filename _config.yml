@@ -46,3 +46,5 @@ exclude:
   - Gemfile.lock
   - README.md
   - LICENSE
+  - CLAUDE.md
+  - AGENTS.md
