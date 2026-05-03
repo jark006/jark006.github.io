@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gemini Nano Chat</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1a2e;--bg2:#16213e;--bg3:#0f3460;--surface:#1e1e3a;--surface2:#252547;--surface3:#2d2d5e;--border:#3a3a6a;--text:#e0e0e0;--text2:#a0a0c0;--accent:#7c5cbf;--accent2:#9d7cd8;--accent3:#b39ddb;--user-bg:#2d4a7a;--ai-bg:#2a2a4a;--danger:#e74c3c;--danger2:#c0392b;--success:#27ae60;--scrollbar:#3a3a6a;--scrollbar2:#5a5a8a}
+html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text)}
+button{cursor:pointer;border:none;font-family:inherit;font-size:inherit}
+input,textarea{font-family:inherit;font-size:inherit}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--scrollbar2)}
+
+/* Layout */
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:280px;min-width:280px;background:var(--bg2);display:flex;flex-direction:column;border-right:1px solid var(--border);transition:margin-left .3s}
+.sidebar.collapsed{margin-left:-280px}
+.sidebar-header{padding:16px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--border)}
+.sidebar-header h2{font-size:16px;color:var(--accent3);font-weight:600;display:flex;align-items:center;gap:8px}
+.new-chat-btn{background:var(--accent);color:#fff;padding:10px;border-radius:8px;font-size:14px;font-weight:500;transition:background .2s}
+.new-chat-btn:hover{background:var(--accent2)}
+.history-list{flex:1;overflow-y:auto;padding:8px}
+.history-item{padding:10px 12px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;transition:background .15s;gap:8px}
+.history-item:hover{background:var(--surface2)}
+.history-item.active{background:var(--surface3)}
+.history-item .title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;color:var(--text)}
+.history-item .delete-btn{opacity:0;background:none;color:var(--danger);font-size:16px;padding:2px 6px;border-radius:4px;transition:opacity .15s;flex-shrink:0}
+.history-item:hover .delete-btn{opacity:1}
+.history-item .delete-btn:hover{background:rgba(231,76,60,.2)}
+.sidebar-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.sidebar-footer button{background:var(--surface2);color:var(--text2);padding:8px 12px;border-radius:6px;font-size:13px;text-align:left;transition:background .15s}
+.sidebar-footer button:hover{background:var(--surface3)}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border);gap:12px;background:var(--surface);min-height:48px}
+.toggle-sidebar{background:none;color:var(--text2);font-size:20px;padding:4px 8px;border-radius:4px}
+.toggle-sidebar:hover{color:var(--text);background:var(--surface2)}
+.topbar .conv-title{flex:1;font-size:14px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.system-prompt-btn{background:none;color:var(--text2);font-size:13px;padding:6px 10px;border-radius:6px;border:1px solid var(--border);transition:all .15s}
+.system-prompt-btn:hover{color:var(--accent3);border-color:var(--accent)}
+
+/* Messages */
+.messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:4px}
+.message{display:flex;gap:12px;padding:12px 16px;border-radius:10px;max-width:85%;position:relative;group:true;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.message.user{align-self:flex-end;background:var(--user-bg);flex-direction:row-reverse}
+.message.assistant{align-self:flex-start;background:var(--ai-bg)}
+.message .avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;font-weight:600}
+.message.user .avatar{background:var(--accent);color:#fff}
+.message.assistant .avatar{background:var(--bg3);color:var(--accent3)}
+.message .content{flex:1;min-width:0;font-size:14px;line-height:1.7;word-break:break-word;white-space:pre-wrap}
+.message .content p{margin:.4em 0}
+.message .content code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:3px;font-size:13px;font-family:'Cascadia Code','Fira Code',monospace}
+.message .content pre{background:rgba(0,0,0,.3);padding:12px;border-radius:6px;overflow-x:auto;margin:.5em 0}
+.message .content pre code{background:none;padding:0}
+.message-actions{display:none;gap:4px;align-self:flex-start;flex-shrink:0}
+.message:hover .message-actions{display:flex}
+.message .edit-btn,.message .copy-btn{background:none;color:var(--text2);font-size:13px;padding:4px 8px;border-radius:4px}
+.message .edit-btn:hover{color:var(--accent3);background:rgba(124,92,191,.15)}
+.message .copy-btn:hover{color:var(--success);background:rgba(39,174,96,.15)}
+
+/* Edit mode */
+.message.editing .content{display:none}
+.edit-area{flex:1;display:flex;flex-direction:column;gap:8px}
+.edit-area textarea{width:100%;background:var(--surface);color:var(--text);border:1px solid var(--accent);border-radius:6px;padding:8px;resize:vertical;min-height:60px;font-size:14px;line-height:1.6}
+.edit-area .edit-actions{display:flex;gap:6px}
+.edit-area .edit-actions button{padding:6px 14px;border-radius:6px;font-size:13px}
+.edit-save{background:var(--accent);color:#fff}
+.edit-save:hover{background:var(--accent2)}
+.edit-cancel{background:var(--surface2);color:var(--text2)}
+.edit-cancel:hover{background:var(--surface3)}
+
+/* Input */
+.input-area{padding:12px 16px;border-top:1px solid var(--border);background:var(--surface)}
+.input-row{display:flex;gap:10px;align-items:flex-end}
+.input-row textarea{flex:1;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 14px;resize:none;min-height:44px;max-height:180px;line-height:1.5;font-size:14px;outline:none;transition:border-color .15s}
+.input-row textarea:focus{border-color:var(--accent)}
+.input-row textarea::placeholder{color:var(--text2)}
+.send-btn{background:var(--accent);color:#fff;width:44px;height:44px;border-radius:10px;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0}
+.send-btn:hover{background:var(--accent2)}
+.send-btn:disabled{opacity:.4;cursor:not-allowed}
+.stop-btn{background:var(--danger);color:#fff}
+.stop-btn:hover{background:var(--danger2)}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:100}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;width:500px;max-width:90vw;max-height:80vh;display:flex;flex-direction:column}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-header h3{font-size:16px;color:var(--accent3)}
+.modal-close{background:none;color:var(--text2);font-size:20px;padding:4px 8px;border-radius:4px}
+.modal-close:hover{color:var(--text);background:var(--surface2)}
+.modal-body{padding:20px;overflow-y:auto;flex:1}
+.modal-body label{display:block;font-size:13px;color:var(--text2);margin-bottom:6px}
+.modal-body textarea{width:100%;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:10px;resize:vertical;min-height:120px;font-size:14px;line-height:1.6}
+.modal-body textarea:focus{outline:none;border-color:var(--accent)}
+.modal-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+.modal-footer button{padding:8px 20px;border-radius:6px;font-size:13px}
+.modal-footer .btn-primary{background:var(--accent);color:#fff}
+.modal-footer .btn-primary:hover{background:var(--accent2)}
+.modal-footer .btn-secondary{background:var(--surface2);color:var(--text2)}
+.modal-footer .btn-secondary:hover{background:var(--surface3)}
+
+/* Welcome */
+.welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--text2)}
+.welcome .icon{font-size:48px}
+.welcome h2{font-size:22px;color:var(--text)}
+.welcome p{font-size:14px;max-width:400px;text-align:center;line-height:1.6}
+.welcome .compat{margin-top:12px;padding:12px 20px;border-radius:8px;font-size:13px}
+.welcome .compat.ok{background:rgba(39,174,96,.15);color:var(--success)}
+.welcome .compat.err{background:rgba(231,76,60,.15);color:var(--danger)}
+
+/* Status */
+.generating{display:flex;align-items:center;gap:8px;color:var(--accent3);font-size:13px;padding:8px 16px}
+.generating .dots span{animation:blink 1.4s infinite both}
+.generating .dots span:nth-child(2){animation-delay:.2s}
+.generating .dots span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--surface2);color:var(--text);padding:10px 20px;border-radius:8px;font-size:13px;border:1px solid var(--border);z-index:200;animation:toastIn .3s}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%)}}
+
+@media(max-width:768px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:50;box-shadow:4px 0 20px rgba(0,0,0,.4)}
+  .sidebar.collapsed{margin-left:-280px}
+  .message{max-width:95%}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>Gemini Nano Chat</h2>
+      <button class="new-chat-btn" id="newChatBtn">+ 新对话</button>
+    </div>
+    <div class="history-list" id="historyList"></div>
+    <div class="sidebar-footer">
+      <button id="settingsBtn">⚙ 系统提示词设置</button>
+    </div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <button class="toggle-sidebar" id="toggleSidebar">☰</button>
+      <span class="conv-title" id="convTitle">Gemini Nano Chat</span>
+    </div>
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <div class="icon">✦</div>
+        <h2>Gemini Nano Chat</h2>
+        <p>使用 Chrome 内置 Gemini Nano 模型进行对话。所有数据保存在本地浏览器中。</p>
+        <div class="compat" id="compatCheck">正在检测浏览器兼容性...</div>
+      </div>
+    </div>
+    <div class="input-area">
+      <div class="input-row">
+        <textarea id="userInput" placeholder="输入消息... (Shift+Enter 换行)" rows="1"></textarea>
+        <button class="send-btn" id="sendBtn" title="发送">&#9654;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>系统提示词设置</h3>
+      <button class="modal-close" id="closeSettings">&times;</button>
+    </div>
+    <div class="modal-body">
+      <label for="systemPrompt">System Prompt（系统提示词）</label>
+      <textarea id="systemPrompt" placeholder="例如：你是一个乐于助人且友好的助手。"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="cancelSettings">取消</button>
+      <button class="btn-primary" id="saveSettings">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+// ─── State ─────────────────────────────────────────
+const STORAGE_KEY = 'gemini_nano_chats';
+const SETTINGS_KEY = 'gemini_nano_settings';
+
+let conversations = loadJSON(STORAGE_KEY, []);
+let settings = loadJSON(SETTINGS_KEY, { systemPrompt: '' });
+let activeConvId = null;
+let session = null;
+let abortCtrl = null;
+let isGenerating = false;
+
+// ─── DOM ───────────────────────────────────────────
+const $ = s => document.querySelector(s);
+const sidebar = $('#sidebar');
+const historyList = $('#historyList');
+const messagesEl = $('#messages');
+const welcomeEl = $('#welcome');
+const userInput = $('#userInput');
+const sendBtn = $('#sendBtn');
+const convTitle = $('#convTitle');
+const compatEl = $('#compatCheck');
+
+// ─── Persistence ───────────────────────────────────
+function loadJSON(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key)) || fallback; }
+  catch { return fallback; }
+}
+function saveConversations() { localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations)); }
+function saveSettings() { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+
+// ─── Compatibility ─────────────────────────────────
+async function checkCompat() {
+  if (!('LanguageModel' in window)) {
+    compatEl.className = 'compat err';
+    compatEl.textContent = '此浏览器不支持 LanguageModel API。请使用 Chrome 131+ 并启用 Gemini Nano。';
+    return false;
+  }
+  try {
+    const avail = await LanguageModel.availability();
+    if (avail === 'available') {
+      compatEl.className = 'compat ok';
+      compatEl.textContent = 'Gemini Nano 模型已就绪！';
+      return true;
+    } else if (avail === 'downloadable') {
+      compatEl.className = 'compat err';
+      compatEl.textContent = '模型可下载，请先在 Chrome 设置中下载 Gemini Nano。';
+      return false;
+    } else {
+      compatEl.className = 'compat err';
+      compatEl.textContent = '模型不可用：' + avail;
+      return false;
+    }
+  } catch (e) {
+    compatEl.className = 'compat err';
+    compatEl.textContent = '检测失败：' + e.message;
+    return false;
+  }
+}
+
+// ─── Conversation Management ───────────────────────
+function createConversation() {
+  const conv = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    title: '新对话',
+    messages: [],
+    createdAt: Date.now()
+  };
+  conversations.unshift(conv);
+  saveConversations();
+  return conv;
+}
+
+function getActiveConv() {
+  return conversations.find(c => c.id === activeConvId);
+}
+
+function deleteConversation(id) {
+  conversations = conversations.filter(c => c.id !== id);
+  saveConversations();
+  if (activeConvId === id) {
+    activeConvId = conversations.length ? conversations[0].id : null;
+    if (activeConvId) selectConversation(activeConvId);
+    else showWelcome();
+  }
+  renderHistory();
+}
+
+function selectConversation(id) {
+  activeConvId = id;
+  const conv = getActiveConv();
+  if (!conv) return;
+  destroySession();
+  convTitle.textContent = conv.title;
+  welcomeEl.style.display = 'none';
+  renderMessages();
+  renderHistory();
+}
+
+function showWelcome() {
+  activeConvId = null;
+  convTitle.textContent = 'Gemini Nano Chat';
+  messagesEl.innerHTML = '';
+  messagesEl.appendChild(welcomeEl);
+  welcomeEl.style.display = '';
+  destroySession();
+  renderHistory();
+}
+
+function autoTitle(conv) {
+  if (conv.messages.length >= 1 && conv.title === '新对话') {
+    const first = conv.messages[0].content;
+    conv.title = first.slice(0, 30) + (first.length > 30 ? '...' : '');
+    saveConversations();
+    convTitle.textContent = conv.title;
+    renderHistory();
+  }
+}
+
+// ─── Session Management ────────────────────────────
+function destroySession() {
+  if (session) { try { session.destroy(); } catch {} session = null; }
+}
+
+async function buildSession(conv) {
+  destroySession();
+  const prompts = [];
+  if (settings.systemPrompt) {
+    prompts.push({ role: 'system', content: settings.systemPrompt });
+  }
+  for (const m of conv.messages) {
+    prompts.push({ role: m.role, content: m.content });
+  }
+  try {
+    session = await LanguageModel.create({ initialPrompts: prompts });
+  } catch (e) {
+    toast('创建会话失败：' + e.message);
+    throw e;
+  }
+}
+
+// ─── Rendering ─────────────────────────────────────
+function renderHistory() {
+  historyList.innerHTML = '';
+  for (const conv of conversations) {
+    const div = document.createElement('div');
+    div.className = 'history-item' + (conv.id === activeConvId ? ' active' : '');
+    div.innerHTML = `<span class="title">${esc(conv.title)}</span><button class="delete-btn" title="删除">&times;</button>`;
+    div.querySelector('.title').onclick = () => selectConversation(conv.id);
+    div.querySelector('.delete-btn').onclick = (e) => {
+      e.stopPropagation();
+      if (confirm('确定删除此对话？')) deleteConversation(conv.id);
+    };
+    historyList.appendChild(div);
+  }
+}
+
+function renderMessages() {
+  const conv = getActiveConv();
+  if (!conv) return;
+  messagesEl.innerHTML = '';
+  for (let i = 0; i < conv.messages.length; i++) {
+    messagesEl.appendChild(createMessageEl(conv.messages[i], i));
+  }
+  scrollToBottom();
+}
+
+function createMessageEl(msg, index) {
+  const div = document.createElement('div');
+  div.className = 'message ' + msg.role;
+  div.dataset.index = index;
+
+  const avatar = document.createElement('div');
+  avatar.className = 'avatar';
+  avatar.textContent = msg.role === 'user' ? 'U' : 'AI';
+
+  const content = document.createElement('div');
+  content.className = 'content';
+  content.innerHTML = renderMarkdown(msg.content);
+
+  const actions = document.createElement('div');
+  actions.className = 'message-actions';
+
+  const editBtn = document.createElement('button');
+  editBtn.className = 'edit-btn';
+  editBtn.textContent = '编辑';
+  editBtn.onclick = () => startEdit(div, index);
+
+  const copyBtn = document.createElement('button');
+  copyBtn.className = 'copy-btn';
+  copyBtn.textContent = '复制';
+  copyBtn.onclick = () => {
+    navigator.clipboard.writeText(msg.content);
+    toast('已复制');
+  };
+
+  actions.appendChild(editBtn);
+  actions.appendChild(copyBtn);
+
+  div.appendChild(avatar);
+  div.appendChild(content);
+  div.appendChild(actions);
+  return div;
+}
+
+function renderMarkdown(text) {
+  let s = esc(text);
+  // Code blocks
+  s = s.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+  // Inline code
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Bold
+  s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // Italic
+  s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  return s;
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function scrollToBottom() {
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function appendMessageEl(msg, index) {
+  const conv = getActiveConv();
+  if (!conv) return;
+  welcomeEl.style.display = 'none';
+  messagesEl.appendChild(createMessageEl(msg, index));
+  scrollToBottom();
+}
+
+// ─── Edit ──────────────────────────────────────────
+function startEdit(msgEl, index) {
+  const conv = getActiveConv();
+  if (!conv || isGenerating) return;
+  const msg = conv.messages[index];
+
+  msgEl.classList.add('editing');
+
+  const editArea = document.createElement('div');
+  editArea.className = 'edit-area';
+
+  const textarea = document.createElement('textarea');
+  textarea.value = msg.content;
+
+  const actions = document.createElement('div');
+  actions.className = 'edit-actions';
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'edit-save';
+  saveBtn.textContent = '保存';
+  saveBtn.onclick = () => finishEdit(msgEl, index, textarea.value);
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'edit-cancel';
+  cancelBtn.textContent = '取消';
+  cancelBtn.onclick = () => cancelEdit(msgEl, index);
+
+  actions.appendChild(saveBtn);
+  actions.appendChild(cancelBtn);
+  editArea.appendChild(textarea);
+  editArea.appendChild(actions);
+
+  msgEl.insertBefore(editArea, msgEl.querySelector('.message-actions'));
+  textarea.focus();
+  textarea.style.height = textarea.scrollHeight + 'px';
+
+  textarea.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); finishEdit(msgEl, index, textarea.value); }
+    if (e.key === 'Escape') cancelEdit(msgEl, index);
+  });
+}
+
+async function finishEdit(msgEl, index, newContent) {
+  const conv = getActiveConv();
+  if (!conv) return;
+  newContent = newContent.trim();
+  if (!newContent) return;
+
+  const editedRole = conv.messages[index].role;
+
+  // Edit the message and remove everything after it
+  conv.messages[index].content = newContent;
+  conv.messages = conv.messages.slice(0, index + 1);
+  saveConversations();
+  destroySession();
+
+  // Re-render
+  renderMessages();
+  autoTitle(conv);
+
+  // If edited a user message, auto-generate the model's response
+  if (editedRole === 'user') {
+    await generate(conv);
+  }
+}
+
+function cancelEdit(msgEl, index) {
+  msgEl.classList.remove('editing');
+  const editArea = msgEl.querySelector('.edit-area');
+  if (editArea) editArea.remove();
+}
+
+// ─── Send / Generate ───────────────────────────────
+async function sendMessage() {
+  const text = userInput.value.trim();
+  if (!text || isGenerating) return;
+
+  let conv = getActiveConv();
+  if (!conv) {
+    conv = createConversation();
+    selectConversation(conv.id);
+  }
+
+  conv.messages.push({ role: 'user', content: text });
+  saveConversations();
+  autoTitle(conv);
+  appendMessageEl(conv.messages[conv.messages.length - 1], conv.messages.length - 1);
+
+  userInput.value = '';
+  userInput.style.height = 'auto';
+
+  await generate(conv);
+}
+
+async function generate(conv) {
+  isGenerating = true;
+  updateSendBtn();
+
+  // Show generating indicator
+  const genDiv = document.createElement('div');
+  genDiv.className = 'generating';
+  genDiv.innerHTML = '<span>✦ 正在思考</span><span class="dots"><span>.</span><span>.</span><span>.</span></span>';
+  messagesEl.appendChild(genDiv);
+  scrollToBottom();
+
+  try {
+    await buildSession(conv);
+
+    abortCtrl = new AbortController();
+    const stream = session.promptStreaming('', { signal: abortCtrl.signal });
+
+    // Create placeholder AI message
+    const aiMsg = { role: 'assistant', content: '' };
+    conv.messages.push(aiMsg);
+    const aiIndex = conv.messages.length - 1;
+
+    genDiv.remove();
+    const aiEl = createMessageEl(aiMsg, aiIndex);
+    messagesEl.appendChild(aiEl);
+    const contentEl = aiEl.querySelector('.content');
+
+    for await (const chunk of stream) {
+      aiMsg.content += chunk;
+      contentEl.innerHTML = renderMarkdown(aiMsg.content);
+      scrollToBottom();
+    }
+
+    saveConversations();
+    autoTitle(conv);
+
+  } catch (e) {
+    genDiv.remove();
+    if (e.name === 'AbortError') {
+      toast('已停止生成');
+    } else {
+      toast('生成失败：' + e.message);
+      // Remove empty AI message if it was added
+      const conv2 = getActiveConv();
+      if (conv2 && conv2.messages.length && conv2.messages[conv2.messages.length - 1].content === '') {
+        conv2.messages.pop();
+        saveConversations();
+      }
+    }
+  } finally {
+    isGenerating = false;
+    abortCtrl = null;
+    updateSendBtn();
+  }
+}
+
+function stopGenerate() {
+  if (abortCtrl) abortCtrl.abort();
+}
+
+function updateSendBtn() {
+  if (isGenerating) {
+    sendBtn.innerHTML = '■';
+    sendBtn.className = 'send-btn stop-btn';
+    sendBtn.title = '停止';
+  } else {
+    sendBtn.innerHTML = '&#9654;';
+    sendBtn.className = 'send-btn';
+    sendBtn.title = '发送';
+  }
+}
+
+// ─── Toast ─────────────────────────────────────────
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; }, 2000);
+  setTimeout(() => t.remove(), 2300);
+}
+
+// ─── Event Listeners ───────────────────────────────
+sendBtn.onclick = () => { isGenerating ? stopGenerate() : sendMessage(); };
+
+userInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+userInput.addEventListener('input', () => {
+  userInput.style.height = 'auto';
+  userInput.style.height = Math.min(userInput.scrollHeight, 180) + 'px';
+});
+
+$('#newChatBtn').onclick = () => {
+  const conv = createConversation();
+  selectConversation(conv.id);
+};
+
+$('#toggleSidebar').onclick = () => sidebar.classList.toggle('collapsed');
+
+$('#settingsBtn').onclick = () => {
+  $('#systemPrompt').value = settings.systemPrompt;
+  $('#settingsModal').classList.add('open');
+};
+$('#closeSettings').onclick = () => $('#settingsModal').classList.remove('open');
+$('#cancelSettings').onclick = () => $('#settingsModal').classList.remove('open');
+$('#saveSettings').onclick = () => {
+  settings.systemPrompt = $('#systemPrompt').value.trim();
+  saveSettings();
+  destroySession();
+  $('#settingsModal').classList.remove('open');
+  toast('系统提示词已保存');
+};
+
+// Click outside modal to close
+$('#settingsModal').onclick = e => {
+  if (e.target === $('#settingsModal')) $('#settingsModal').classList.remove('open');
+};
+
+// ─── Init ──────────────────────────────────────────
+async function init() {
+  renderHistory();
+  await checkCompat();
+  if (conversations.length) {
+    selectConversation(conversations[0].id);
+  }
+}
+
+init();
+
+})();
+</script>
+</body>
+</html>
