@@ -4,6 +4,28 @@ title: 404
 permalink: /404.html
 ---
 
+<script>
+  (async () => {
+    const normalizePath = (path) => path.endsWith('/') ? path : `${path}/`;
+    const currentPath = normalizePath(location.pathname);
+    const currentKey = currentPath.toLowerCase();
+
+    try {
+      const response = await fetch("{{ '/case-insensitive-urls.json' | relative_url }}", { cache: 'force-cache' });
+      if (!response.ok) return;
+
+      const urls = await response.json();
+      const canonicalPath = urls[currentKey];
+
+      if (canonicalPath && canonicalPath !== currentPath) {
+        location.replace(`${canonicalPath}${location.search}${location.hash}`);
+      }
+    } catch {
+      // Keep the normal 404 page if the redirect index cannot be loaded.
+    }
+  })();
+</script>
+
 <div class="fade-in" style="text-align: center; padding: 4rem 0;">
   <h1 style="font-size: clamp(4rem, 3rem + 5vw, 8rem); margin: 0; color: var(--accent);">404</h1>
   <p style="font-size: 1.25rem; color: var(--text-secondary); margin-top: 1rem;">页面没有找到，也许它已经被移动或删除了。</p>

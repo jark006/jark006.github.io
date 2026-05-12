@@ -1,0 +1,27 @@
+---
+layout: null
+permalink: /case-insensitive-urls.json
+---
+{
+{%- assign first = true -%}
+{%- for page in site.html_pages -%}
+  {%- unless page.url == "/404.html" -%}
+    {%- unless first -%},{%- endunless %}
+  {{ page.url | downcase | jsonify }}: {{ page.url | jsonify }}
+    {%- assign first = false -%}
+  {%- endunless -%}
+{%- endfor -%}
+{%- for post in site.posts -%}
+  {%- unless first -%},{%- endunless %}
+  {{ post.url | downcase | jsonify }}: {{ post.url | jsonify }}
+  {%- assign first = false -%}
+{%- endfor -%}
+{%- for file in site.static_files -%}
+  {%- if file.path contains "/i/" and file.basename == "index" and file.extname == ".html" -%}
+    {%- assign path = file.path | replace: "\\", "/" | remove_first: "/index.html" | append: "/" -%}
+    {%- unless first -%},{%- endunless %}
+  {{ path | downcase | jsonify }}: {{ path | jsonify }}
+    {%- assign first = false -%}
+  {%- endif -%}
+{%- endfor %}
+}
